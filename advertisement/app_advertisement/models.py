@@ -2,6 +2,9 @@ from django.db import models
 from django.contrib import admin
 from django.utils import timezone
 from django.utils.html import format_html
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 class Advertisement(models.Model):
     title = models.CharField(
@@ -29,6 +32,17 @@ class Advertisement(models.Model):
         auto_now=True,
         verbose_name="Дата редактирования"
     )
+    user = models.ForeignKey(
+        User,
+        verbose_name="Пользователь",
+        on_delete=models.CASCADE
+    )
+    image = models.ImageField(
+        verbose_name="Изображение",
+        upload_to="advertisements/",
+        null=True,
+        blank=True
+    )
 
     @admin.display(description="Текущая дата")
     def created_date(self):
@@ -46,7 +60,16 @@ class Advertisement(models.Model):
                 '<span style="color: blue; font-weight: bold;">Сегодня в {}</span>', created_time
             )
         return self.updated_at.strftime("%d.%m.%Y в %H:%M:%S:")
-
+    @admin.display(description="Показ фото")
+    def show_picture(self):
+        if self.image:
+            return format_html(
+                '<img src={} style="width: 100px; height: 100px;"/>', self.image.url
+            )
+        else:
+            return format_html(
+                '<span style="color: red;">Нету фото!</span>'
+            )
     def __str__(self):
         return f"id={self.id} title={self.title} price={self.price}"
     class Meta:
