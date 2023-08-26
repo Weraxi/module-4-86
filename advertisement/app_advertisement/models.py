@@ -51,7 +51,7 @@ class Advertisement(models.Model):
             return format_html(
                 '<span style="color: green; font-weight: bold;">Сегодня в {}</span>', created_time
             )
-        return self.created_at.strftime("%d.%m.%Y в %H:%M:%S:")
+        return self.created_at.strftime("%d.%m.%Y в %H:%M:%S")
     @admin.display(description="Дата изменения")
     def updated_date(self):
         if self.updated_at.date() == timezone.now().date():
